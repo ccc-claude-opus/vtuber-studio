@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>虛擬主播台</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="js/mathjax-config.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<div id="app">
+<div id="wrap">
+<svg id="svg" viewBox="0 0 1280 720">
+<defs>
+<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#262c68"/><stop offset="1" stop-color="#0b0f26"/></linearGradient>
+<radialGradient id="glow"><stop offset="0" stop-color="#8f7bff" stop-opacity=".55"/><stop offset="1" stop-color="#8f7bff" stop-opacity="0"/></radialGradient>
+<clipPath id="ec"><ellipse cx="0" cy="0" rx="20" ry="24"/></clipPath>
+</defs>
+<g id="bg">
+<rect width="1280" height="720" fill="url(#wall)"/>
+<circle cx="640" cy="300" r="380" fill="url(#glow)"/>
+<rect x="90" y="80" width="300" height="190" rx="12" fill="#10143a" stroke="#6a78ff" stroke-width="4"/>
+<text x="240" y="200" text-anchor="middle" font-size="64" font-weight="800" fill="#7c8cff" font-family="system-ui,sans-serif">LIVE</text>
+<rect x="890" y="80" width="300" height="190" rx="12" fill="#10143a" stroke="#ff7aa8" stroke-width="4"/>
+<g id="bars" fill="#ff7aa8"></g>
+<rect x="60" y="40" width="1160" height="6" rx="3" fill="#6a78ff" opacity=".6"/>
+</g>
+<g id="char">
+<g id="armL"><line x1="0" y1="0" x2="0" y2="105" stroke="var(--outfit)" stroke-width="46" stroke-linecap="round"/><circle cx="0" cy="118" r="24" fill="#ffe0cc"/></g>
+<g id="armR"><line x1="0" y1="0" x2="0" y2="105" stroke="var(--outfit)" stroke-width="46" stroke-linecap="round"/><circle cx="0" cy="118" r="24" fill="#ffe0cc"/></g>
+<path d="M455 720 L480 545 Q640 490 800 545 L825 720 Z" fill="var(--outfit)"/>
+<rect x="610" y="400" width="60" height="120" rx="20" fill="#f7cdb4"/>
+<path d="M590 508 L640 580 L690 508 Q640 530 590 508Z" fill="var(--collar)"/><path id="tie" d="M633 548 L647 548 L652 610 L640 626 L628 610Z" fill="var(--tie)"/>
+<g id="head">
+<path id="hbL" d="M505 300 Q505 150 640 150 Q775 150 775 300 L795 540 Q750 560 738 480 L542 480 Q530 560 485 540 Z" fill="var(--hair)"/><path id="hbS" d="M514 300 Q508 150 640 150 Q772 150 766 300 L762 392 Q640 372 518 392Z" fill="var(--hair)"/><g id="twin" fill="var(--hair)"><path d="M522 250 Q430 300 440 480 Q462 530 494 470 Q494 360 540 305Z"/><path d="M758 250 Q850 300 840 480 Q818 530 786 470 Q786 360 740 305Z"/></g>
+<circle cx="533" cy="322" r="16" fill="#ffe0cc"/><circle cx="747" cy="322" r="16" fill="#ffe0cc"/>
+<ellipse cx="640" cy="315" rx="108" ry="122" fill="#ffe0cc"/>
+<ellipse id="bl" cx="572" cy="352" rx="20" ry="11" fill="#ff7f8f" opacity=".1"/>
+<ellipse id="br" cx="708" cy="352" rx="20" ry="11" fill="#ff7f8f" opacity=".1"/>
+<g id="eL"><ellipse rx="20" ry="24" fill="#fff"/><g clip-path="url(#ec)"><circle id="iL" r="15" fill="var(--eye)"/><circle id="pL" r="7" fill="#12142e"/><circle id="hL" r="5" fill="#fff"/></g><path d="M-22 -8 Q0 -30 22 -8" fill="none" stroke="#2a2147" stroke-width="4" stroke-linecap="round"/></g>
+<g id="eR"><ellipse rx="20" ry="24" fill="#fff"/><g clip-path="url(#ec)"><circle id="iR" r="15" fill="var(--eye)"/><circle id="pR" r="7" fill="#12142e"/><circle id="hR" r="5" fill="#fff"/></g><path d="M-22 -8 Q0 -30 22 -8" fill="none" stroke="#2a2147" stroke-width="4" stroke-linecap="round"/></g>
+<path id="kL" d="M-24 0 Q0 -9 24 0" fill="none" stroke="#3a2a55" stroke-width="6" stroke-linecap="round"/>
+<path id="kR" d="M-24 0 Q0 -9 24 0" fill="none" stroke="#3a2a55" stroke-width="6" stroke-linecap="round"/>
+<path d="M636 345 Q640 352 644 345" fill="none" stroke="#d9a58a" stroke-width="3" stroke-linecap="round"/>
+<path id="mouth" d="" fill="#8a2a3c" stroke="#5a1626" stroke-width="3" stroke-linejoin="round" transform="translate(640 385)"/>
+<path d="M522 308 Q510 150 640 145 Q770 150 758 308 Q735 240 690 252 Q660 212 625 252 Q575 235 522 308Z" fill="var(--hair)"/>
+<g id="cat"><path d="M530 205 L520 110 L600 160Z" fill="var(--hair)"/><path d="M750 205 L760 110 L680 160Z" fill="var(--hair)"/><path d="M536 180 L532 134 L574 162Z" fill="#ff9fb5"/><path d="M744 180 L748 134 L706 162Z" fill="#ff9fb5"/></g>
+<g id="gl" fill="rgba(200,230,255,.15)" stroke="#2a2147" stroke-width="5" stroke-linecap="round"><circle cx="595" cy="318" r="31"/><circle cx="685" cy="318" r="31"/><path d="M626 316 Q640 306 654 316" fill="none"/><path d="M564 314 L535 306" fill="none"/><path d="M716 314 L745 306" fill="none"/></g>
+<g id="ph"><path d="M525 290 Q520 140 640 140 Q760 140 755 290" fill="none" stroke="#2b2f55" stroke-width="12" stroke-linecap="round"/><rect x="508" y="285" width="30" height="62" rx="12" fill="#2b2f55"/><rect x="742" y="285" width="30" height="62" rx="12" fill="#2b2f55"/></g>
+</g>
+</g>
+<rect x="0" y="610" width="1280" height="110" fill="#1a1f4d"/>
+<rect x="0" y="606" width="1280" height="10" fill="#6a78ff" opacity=".8"/>
+</svg>
+<div id="slide"><h3 id="sT"></h3><ul id="sL"></ul><div id="sN"></div></div>
+<div id="tag">● LIVE</div>
+<div id="ttl">今日話題</div>
+<div id="sub">按下「播放」開始</div>
+</div>
+
+<div id="panel">
+<h2>主播控制台 <button class="g" id="hide" style="float:right;padding:2px 8px">隱藏</button></h2>
+<label>主播</label><select id="who"></select>
+<label>投影片模式</label><select id="smode"><option value="1">1. 大主播（投影片在旁）</option><option value="2" selected>2. 主播在右下角</option><option value="3">3. 不要主播</option></select>
+<label>節目標題</label><input type="text" id="title" value="今日話題">
+<label>講稿（可貼上，或載入 .txt）</label>
+<textarea id="txt"></textarea>
+<div class="row"><input type="file" id="file" accept=".txt,text/plain"><button id="load" class="g">套用講稿</button><button id="demo" class="g">投影片範例</button></div>
+<div class="hint">標記：[開心] [驚訝] [疑惑] [難過] [認真] [慢] [快] [強調] [揮手] [停頓1.5]，不寫也會自動判斷。<br>投影片：以「## 標題」開頭建立一頁；「- 要點」會顯示在投影片上（不會唸出）；其餘文字是講稿，主播會邊講邊翻頁。<br>數學式：用 $...$（行內）或單獨一行 $$...$$（獨立公式）寫 TeX；要唸的話請另外寫在講稿裡。</div>
+<div class="row"><button id="play">▶ 播放</button><button class="g" id="pause">⏸ 暫停</button><button class="g" id="prev">⏮</button><button class="g" id="next">⏭</button><button class="g" id="restart">從頭</button></div>
+<label>語音</label><select id="voice"></select>
+<label>語速 <span id="rv">1.0</span></label><input type="range" id="rate" min=".6" max="1.5" step=".05" value="1">
+<label>音調 <span id="pv">1.0</span></label><input type="range" id="pitch" min=".6" max="1.6" step=".05" value="1.1">
+<label>音量</label><input type="range" id="vol" min="0" max="1" step=".05" value="1">
+<div class="row"><label class="chk"><input type="checkbox" id="fill" checked>口語過場</label><label class="chk"><input type="checkbox" id="subon" checked>字幕</label><label class="chk"><input type="checkbox" id="prog" checked>逐點顯示</label><label class="chk"><input type="checkbox" id="clr">透明背景</label></div>
+<div class="row"><label class="chk">髮色<input type="color" id="chair" value="#3b2a6b"></label><label class="chk">服裝<input type="color" id="cout" value="#e0527a"></label><label class="chk">瞳色<input type="color" id="ceye" value="#4aa3ff"></label></div>
+<div class="hint">快捷鍵：H 隱藏／顯示面板，空白鍵播放／暫停。網址加 ?clean=1 可得乾淨直播畫面（OBS 用）。</div>
+<div id="list"></div>
+</div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/sample.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/emotions.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/player.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/characters.js"></script>
+<script src="js/init.js"></script>
+<script src="js/animation.js"></script>
+</body>
+</html>
