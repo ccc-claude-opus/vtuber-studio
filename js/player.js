@@ -10,7 +10,10 @@ async function run(start){
   if(my!==token)return;
   const it=items[idx];
   document.querySelectorAll('#list .on').forEach(n=>n.classList.remove('on'));
-  const n=$('list').children[idx];if(n){n.classList.add('on');n.scrollIntoView({block:'nearest'})}
+  const L=$('list'),n=L.children[idx];
+  if(n){n.classList.add('on');/* 只捲講稿清單本身，不拉動整頁，畫面才會停在主播台 */
+   const d=n.getBoundingClientRect().top-L.getBoundingClientRect().top;
+   if(d<0||d+n.offsetHeight>L.clientHeight)L.scrollTop+=d-(L.clientHeight-n.offsetHeight)/2}
   $('sub').textContent=it.text;showSlide(it);
   tgt=EM[it.emo]||EM.normal;
   if(it.wave||(idx===0&&it.emo==='happy'))wave=2.4;
