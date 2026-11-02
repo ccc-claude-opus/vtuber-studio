@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>虛擬主播台</title>
+<style>
+:root{--bg:#0e1020;--panel:#171a30;--ink:#eef0ff;--mut:#9aa0c8;--line:#2b3058;--acc:#7c8cff;--hair:#3b2a6b;--outfit:#e0527a;--eye:#4aa3ff;--skin:#ffe0cc;--skin2:#f7cdb4;--collar:#fff;--tie:#e0334f;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eceefa;--panel:#fff;--ink:#1a1d3a;--mut:#5a6090;--line:#d5d9f0;--acc:#4a5af0;color-scheme:light}}
+:root[data-theme="dark"]{--bg:#0e1020;--panel:#171a30;--ink:#eef0ff;--mut:#9aa0c8;--line:#2b3058;--acc:#7c8cff}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif}
+body.clear{background:transparent}
+#app{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px;padding:12px;align-items:start}
+#app.nopanel{grid-template-columns:1fr;padding:0}
+#app.nopanel #panel{display:none}
+#wrap{position:relative;container-type:inline-size;border-radius:10px;overflow:hidden;aspect-ratio:16/9;background:#0b0f26}
+body.clear #wrap{background:transparent}
+body.clear #bg{display:none}
+svg{display:block;width:100%;height:100%}
+#sub{position:absolute;left:5%;right:5%;bottom:3.5%;text-align:center;color:#fff;font-weight:600;font-size:clamp(14px,2.5cqw,36px);line-height:1.45;padding:.5em 1em;border-radius:.6em;background:rgba(10,12,35,.72);backdrop-filter:blur(4px);min-height:2.4em;display:flex;align-items:center;justify-content:center}
+#sub.off{display:none}
+#tag{position:absolute;left:3%;top:4%;font-size:clamp(11px,1.6cqw,22px);font-weight:700;background:#e0334f;color:#fff;padding:.2em .7em;border-radius:.4em}
+#ttl{position:absolute;left:3%;bottom:20%;font-size:clamp(13px,2.2cqw,32px);font-weight:700;color:#fff;background:linear-gradient(90deg,#e0527a,#7c4dff);padding:.25em .9em;border-radius:.3em 1.2em 1.2em .3em}
+#panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:calc(100vh - 24px);overflow:auto}
+#panel h2{font-size:15px;margin:0 0 8px}
+#panel label{display:block;margin:8px 0 2px;color:var(--mut);font-size:12px}
+#panel textarea,#panel select,#panel input[type=text]{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px;font:inherit}
+textarea{height:150px;resize:vertical}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+button{background:var(--acc);color:#fff;border:0;border-radius:6px;padding:7px 12px;font:inherit;cursor:pointer}
+button.g{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+input[type=range]{width:100%}
+.chk{display:inline-flex;gap:4px;align-items:center;margin-right:10px;color:var(--ink)!important;font-size:13px!important}
+#list{margin-top:8px;max-height:220px;overflow:auto;border-top:1px solid var(--line)}
+#list div{padding:4px 6px;cursor:pointer;border-radius:4px;font-size:13px}
+#list div:hover{background:var(--bg)}
+#list div.on{background:var(--acc);color:#fff}
+.hint{color:var(--mut);font-size:12px}
+#slide{position:absolute;left:3%;top:8%;width:74%;aspect-ratio:16/9;background:#f6f7ff;color:#1a1d3a;border-radius:1cqw;padding:2.6cqw 3.2cqw;box-shadow:0 1cqw 3cqw rgba(0,0,0,.45);border-left:1cqw solid #7c4dff;opacity:0;pointer-events:none;transition:opacity .4s;overflow:hidden}
+#slide.on{opacity:1}
+#wrap.m1 #slide{top:10%;width:60%}
+#wrap.m1 #sT{font-size:3.2cqw}#wrap.m1 #sL{font-size:2.2cqw}
+#wrap.m3 #slide{left:10%;top:6%;width:80%}
+#wrap.m3 #sT{font-size:4.4cqw}#wrap.m3 #sL{font-size:3.1cqw}
+.sk{fill:var(--skin)}.sk2{fill:var(--skin2)}
+#sL li.m{list-style:none;margin-left:-2.2cqw}
+#sL mjx-container[display="true"]{margin:.2em 0!important}
+#slide.pop{animation:pop .5s ease-out}
+@keyframes pop{from{opacity:0;transform:translateX(-4%)}to{opacity:1;transform:none}}
+#sT{margin:0 0 1.8cqw;font-size:3.8cqw;line-height:1.25}
+#sL{margin:0;padding-left:2.2cqw;font-size:2.7cqw;line-height:1.5}
+#sL li{margin-bottom:.9cqw;opacity:0;transform:translateY(.8cqw);transition:opacity .45s,transform .45s}
+#sL li.v{opacity:1;transform:none}
+#sN{position:absolute;right:1.6cqw;bottom:1cqw;font-size:1.3cqw;color:#6a70a0}
+#wrap.sl #ttl{display:none}
+@media (prefers-reduced-motion:reduce){#slide.pop{animation:none}#sL li,#slide{transition:none}}
+@media (max-width:900px){#app{grid-template-columns:1fr}#panel{max-height:none}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},svg:{fontCache:'none'},startup:{typeset:false}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<div id="app">
+<div id="wrap">
+<svg id="svg" viewBox="0 0 1280 720">
+<defs>
+<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#262c68"/><stop offset="1" stop-color="#0b0f26"/></linearGradient>
+<radialGradient id="glow"><stop offset="0" stop-color="#8f7bff" stop-opacity=".55"/><stop offset="1" stop-color="#8f7bff" stop-opacity="0"/></radialGradient>
+<clipPath id="ec"><ellipse cx="0" cy="0" rx="20" ry="24"/></clipPath>
+</defs>
+<g id="bg">
+<rect width="1280" height="720" fill="url(#wall)"/>
+<circle cx="640" cy="300" r="380" fill="url(#glow)"/>
+<rect x="90" y="80" width="300" height="190" rx="12" fill="#10143a" stroke="#6a78ff" stroke-width="4"/>
+<text x="240" y="200" text-anchor="middle" font-size="64" font-weight="800" fill="#7c8cff" font-family="system-ui,sans-serif">LIVE</text>
+<rect x="890" y="80" width="300" height="190" rx="12" fill="#10143a" stroke="#ff7aa8" stroke-width="4"/>
+<g id="bars" fill="#ff7aa8"></g>
+<rect x="60" y="40" width="1160" height="6" rx="3" fill="#6a78ff" opacity=".6"/>
+</g>
+<g id="char">
+<g id="armL"><line x1="0" y1="0" x2="0" y2="105" stroke="var(--outfit)" stroke-width="46" stroke-linecap="round"/><circle cx="0" cy="118" r="24" fill="#ffe0cc"/></g>
+<g id="armR"><line x1="0" y1="0" x2="0" y2="105" stroke="var(--outfit)" stroke-width="46" stroke-linecap="round"/><circle cx="0" cy="118" r="24" fill="#ffe0cc"/></g>
+<path d="M455 720 L480 545 Q640 490 800 545 L825 720 Z" fill="var(--outfit)"/>
+<rect x="610" y="400" width="60" height="120" rx="20" fill="#f7cdb4"/>
+<path d="M590 508 L640 580 L690 508 Q640 530 590 508Z" fill="var(--collar)"/><path id="tie" d="M633 548 L647 548 L652 610 L640 626 L628 610Z" fill="var(--tie)"/>
+<g id="head">
+<path id="hbL" d="M505 300 Q505 150 640 150 Q775 150 775 300 L795 540 Q750 560 738 480 L542 480 Q530 560 485 540 Z" fill="var(--hair)"/><path id="hbS" d="M514 300 Q508 150 640 150 Q772 150 766 300 L762 392 Q640 372 518 392Z" fill="var(--hair)"/><g id="twin" fill="var(--hair)"><path d="M522 250 Q430 300 440 480 Q462 530 494 470 Q494 360 540 305Z"/><path d="M758 250 Q850 300 840 480 Q818 530 786 470 Q786 360 740 305Z"/></g>
+<circle cx="533" cy="322" r="16" fill="#ffe0cc"/><circle cx="747" cy="322" r="16" fill="#ffe0cc"/>
+<ellipse cx="640" cy="315" rx="108" ry="122" fill="#ffe0cc"/>
+<ellipse id="bl" cx="572" cy="352" rx="20" ry="11" fill="#ff7f8f" opacity=".1"/>
+<ellipse id="br" cx="708" cy="352" rx="20" ry="11" fill="#ff7f8f" opacity=".1"/>
+<g id="eL"><ellipse rx="20" ry="24" fill="#fff"/><g clip-path="url(#ec)"><circle id="iL" r="15" fill="var(--eye)"/><circle id="pL" r="7" fill="#12142e"/><circle id="hL" r="5" fill="#fff"/></g><path d="M-22 -8 Q0 -30 22 -8" fill="none" stroke="#2a2147" stroke-width="4" stroke-linecap="round"/></g>
+<g id="eR"><ellipse rx="20" ry="24" fill="#fff"/><g clip-path="url(#ec)"><circle id="iR" r="15" fill="var(--eye)"/><circle id="pR" r="7" fill="#12142e"/><circle id="hR" r="5" fill="#fff"/></g><path d="M-22 -8 Q0 -30 22 -8" fill="none" stroke="#2a2147" stroke-width="4" stroke-linecap="round"/></g>
+<path id="kL" d="M-24 0 Q0 -9 24 0" fill="none" stroke="#3a2a55" stroke-width="6" stroke-linecap="round"/>
+<path id="kR" d="M-24 0 Q0 -9 24 0" fill="none" stroke="#3a2a55" stroke-width="6" stroke-linecap="round"/>
+<path d="M636 345 Q640 352 644 345" fill="none" stroke="#d9a58a" stroke-width="3" stroke-linecap="round"/>
+<path id="mouth" d="" fill="#8a2a3c" stroke="#5a1626" stroke-width="3" stroke-linejoin="round" transform="translate(640 385)"/>
+<path d="M522 308 Q510 150 640 145 Q770 150 758 308 Q735 240 690 252 Q660 212 625 252 Q575 235 522 308Z" fill="var(--hair)"/>
+<g id="cat"><path d="M530 205 L520 110 L600 160Z" fill="var(--hair)"/><path d="M750 205 L760 110 L680 160Z" fill="var(--hair)"/><path d="M536 180 L532 134 L574 162Z" fill="#ff9fb5"/><path d="M744 180 L748 134 L706 162Z" fill="#ff9fb5"/></g>
+<g id="gl" fill="rgba(200,230,255,.15)" stroke="#2a2147" stroke-width="5" stroke-linecap="round"><circle cx="595" cy="318" r="31"/><circle cx="685" cy="318" r="31"/><path d="M626 316 Q640 306 654 316" fill="none"/><path d="M564 314 L535 306" fill="none"/><path d="M716 314 L745 306" fill="none"/></g>
+<g id="ph"><path d="M525 290 Q520 140 640 140 Q760 140 755 290" fill="none" stroke="#2b2f55" stroke-width="12" stroke-linecap="round"/><rect x="508" y="285" width="30" height="62" rx="12" fill="#2b2f55"/><rect x="742" y="285" width="30" height="62" rx="12" fill="#2b2f55"/></g>
+</g>
+</g>
+<rect x="0" y="610" width="1280" height="110" fill="#1a1f4d"/>
+<rect x="0" y="606" width="1280" height="10" fill="#6a78ff" opacity=".8"/>
+</svg>
+<div id="slide"><h3 id="sT"></h3><ul id="sL"></ul><div id="sN"></div></div>
+<div id="tag">● LIVE</div>
+<div id="ttl">今日話題</div>
+<div id="sub">按下「播放」開始</div>
+</div>
+
+<div id="panel">
+<h2>主播控制台 <button class="g" id="hide" style="float:right;padding:2px 8px">隱藏</button></h2>
+<label>主播</label><select id="who"></select>
+<label>投影片模式</label><select id="smode"><option value="1">1. 大主播（投影片在旁）</option><option value="2" selected>2. 主播在右下角</option><option value="3">3. 不要主播</option></select>
+<label>節目標題</label><input type="text" id="title" value="今日話題">
+<label>講稿（可貼上，或載入 .txt）</label>
+<textarea id="txt"></textarea>
+<div class="row"><input type="file" id="file" accept=".txt,text/plain"><button id="load" class="g">套用講稿</button><button id="demo" class="g">投影片範例</button></div>
+<div class="hint">標記：[開心] [驚訝] [疑惑] [難過] [認真] [慢] [快] [強調] [揮手] [停頓1.5]，不寫也會自動判斷。<br>投影片：以「## 標題」開頭建立一頁；「- 要點」會顯示在投影片上（不會唸出）；其餘文字是講稿，主播會邊講邊翻頁。<br>數學式：用 $...$（行內）或單獨一行 $$...$$（獨立公式）寫 TeX；要唸的話請另外寫在講稿裡。</div>
+<div class="row"><button id="play">▶ 播放</button><button class="g" id="pause">⏸ 暫停</button><button class="g" id="prev">⏮</button><button class="g" id="next">⏭</button><button class="g" id="restart">從頭</button></div>
+<label>語音</label><select id="voice"></select>
+<label>語速 <span id="rv">1.0</span></label><input type="range" id="rate" min=".6" max="1.5" step=".05" value="1">
+<label>音調 <span id="pv">1.0</span></label><input type="range" id="pitch" min=".6" max="1.6" step=".05" value="1.1">
+<label>音量</label><input type="range" id="vol" min="0" max="1" step=".05" value="1">
+<div class="row"><label class="chk"><input type="checkbox" id="fill" checked>口語過場</label><label class="chk"><input type="checkbox" id="subon" checked>字幕</label><label class="chk"><input type="checkbox" id="prog" checked>逐點顯示</label><label class="chk"><input type="checkbox" id="clr">透明背景</label></div>
+<div class="row"><label class="chk">髮色<input type="color" id="chair" value="#3b2a6b"></label><label class="chk">服裝<input type="color" id="cout" value="#e0527a"></label><label class="chk">瞳色<input type="color" id="ceye" value="#4aa3ff"></label></div>
+<div class="hint">快捷鍵：H 隱藏／顯示面板，空白鍵播放／暫停。網址加 ?clean=1 可得乾淨直播畫面（OBS 用）。</div>
+<div id="list"></div>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const SAMPLE=`[揮手]大家好，歡迎來到今天的節目！我是你們的虛擬主播。
+今天我們要聊一個很有趣的話題：[停頓0.6]到底要怎麼把一份講稿，說得像真人一樣自然呢？
+首先，[認真]最重要的是節奏。說話不能一直用同一個速度，對吧？
+有時候要放慢一點……讓重點慢慢浮出來。
+有時候又要加快，帶出一點興奮的感覺！[強調]
+你可能會問：機器真的能做到嗎？
+[驚訝]沒想到吧，只要加上表情、停頓和小動作，就會生動很多！
+當然，也有一些讓人覺得可惜的地方，[難過]比如瀏覽器的語音，聲音還不夠自然。
+不過別擔心，[開心]之後只要換成更好的語音，效果還會更棒。
+謝謝大家收看，我們下次再見！[揮手]`;
+$('txt').value=SAMPLE;
+
+/* ---------- 解析講稿 ---------- */
+let slides=[],slideT=0,slideSm=0,smode=2;
+const SM={1:{sc:.8,cx:1000},2:{sc:.45,cx:1120},3:{sc:1,cx:640,hide:1}};
+function setSmode(v){smode=SM[v]?+v:2;$('smode').value=smode;const w=$('wrap');w.classList.remove('m1','m2','m3');w.classList.add('m'+smode)}
+const EMO={'開心':'happy','高興':'happy','驚訝':'surprised','疑惑':'curious','難過':'sad','認真':'serious','平常':'normal','正常':'normal'};
+function auto(t){
+ if(/抱歉|可惜|遺憾|難過|不幸|失望/.test(t))return'sad';
+ if(/竟然|沒想到|居然|哇|天啊|驚人/.test(t))return'surprised';
+ if(/注意|重要|必須|務必|警告|小心/.test(t))return'serious';
+ if(/[？?]\s*$/.test(t)||/嗎[，,]?/.test(t)&&/[？?]/.test(t))return'curious';
+ if(/[！!]/.test(t)||/歡迎|謝謝|太棒|恭喜|開心|好消息/.test(t))return'happy';
+ return'normal';
+}
+function parse(src){
+ const out=[];let pend={emo:null,pre:0,rate:1,wave:false,emph:false};slides=[];let cs=-1;
+ src.replace(/\r/g,'').split(/\n+/).forEach(line=>{
+  line=line.trim();if(!line)return;
+  let m=line.match(/^#{1,3}\s*(.+)$/);
+  if(m){slides.push({title:m[1],bul:[],n:0});cs=slides.length-1;return}
+  m=line.match(/^[-*•]\s+(.+)$/);
+  if(m){if(cs<0){slides.push({title:'',bul:[],n:0});cs=0}slides[cs].bul.push(m[1]);return}
+  if(/^\$\$.+\$\$$/.test(line)){if(cs<0){slides.push({title:'',bul:[],n:0});cs=0}slides[cs].bul.push(line);return}
+  line=line.replace(/\$[^$]+\$/g,'').trim();if(!line)return;
+  (line.match(/[^。！？!?；;…]+[。！？!?；;…]*/g)||[]).forEach(ch=>{
+   ch.replace(/\[([^\]]+)\]/g,(m,tg)=>{
+    if(EMO[tg])pend.emo=EMO[tg];
+    else if(tg.startsWith('停頓'))pend.pre+=parseFloat(tg.slice(2))||1;
+    else if(tg==='慢')pend.rate=.8;else if(tg==='快')pend.rate=1.2;
+    else if(tg==='強調')pend.emph=true;else if(tg==='揮手')pend.wave=true;
+    return'';});
+   const text=ch.replace(/\[[^\]]*\]/g,'').trim();
+   if(!/[\p{L}\p{N}]/u.test(text))return;
+   const end=text.slice(-1);
+   out.push({text,emo:pend.emo||auto(text),pre:pend.pre,rate:pend.rate*(/…/.test(end)?.88:1),
+     slide:cs,sIdx:cs>=0?slides[cs].n++:0,emph:pend.emph||/[！!]/.test(text),wave:pend.wave||/大家好|歡迎|哈囉|再見|拜拜/.test(text),end,para:false});
+   pend={emo:null,pre:0,rate:1,wave:false,emph:false};
+  });
+  if(out.length)out[out.length-1].para=true;
+ });
+ return out;
+}
+
+/* ---------- 情緒參數 ---------- */
+const EM={
+ normal:{smile:.3,bL:0,bR:0,yL:0,yR:0,eye:1,tilt:0,lean:0,blush:.1,rate:1,pitch:1},
+ happy:{smile:1,bL:-6,bR:6,yL:-5,yR:-5,eye:.85,tilt:3,lean:.6,blush:.5,rate:1.08,pitch:1.1},
+ surprised:{smile:-.1,bL:-8,bR:8,yL:-14,yR:-14,eye:1.2,tilt:0,lean:.3,blush:.15,rate:1.05,pitch:1.15,open:.5},
+ curious:{smile:.1,bL:6,bR:10,yL:0,yR:-12,eye:1,tilt:-8,lean:0,blush:.1,rate:.97,pitch:1.08},
+ sad:{smile:-.7,bL:-12,bR:12,yL:2,yR:2,eye:.8,tilt:5,lean:-.4,blush:0,rate:.88,pitch:.92},
+ serious:{smile:-.05,bL:10,bR:-10,yL:2,yR:2,eye:.92,tilt:0,lean:.4,blush:0,rate:.95,pitch:.95}
+};
+const cur={...EM.normal,open:0};let tgt=EM.normal;
+
+/* ---------- 語音 ---------- */
+const synth=window.speechSynthesis;let voices=[];
+function loadVoices(){
+ if(!synth)return;
+ let all=synth.getVoices();let zh=all.filter(v=>/^zh/i.test(v.lang));
+ zh.sort((a,b)=>(/TW/i.test(b.lang)-/TW/i.test(a.lang))||(/Online|Natural|Google/i.test(b.name)-/Online|Natural|Google/i.test(a.name)));
+ voices=zh.length?zh:all;
+ $('voice').innerHTML=voices.map((v,i)=>`<option value="${i}">${v.name}（${v.lang}）</option>`).join('')||'<option>無可用語音（以靜音模式演出）</option>';
+}
+if(synth){loadVoices();synth.onvoiceschanged=loadVoices;}
+let speaking=false,pulse=0,paused=false;
+function say(text,o){
+ return new Promise(res=>{
+  if(!synth||!voices.length){speaking=true;setTimeout(()=>{speaking=false;res()},text.length*240/o.rate);return;}
+  const u=new SpeechSynthesisUtterance(text);const v=voices[+$('voice').value];
+  if(v){u.voice=v;u.lang=v.lang}else u.lang='zh-TW';
+  u.rate=o.rate;u.pitch=o.pitch;u.volume=o.vol;
+  let done=false,to;
+  const fin=()=>{if(done)return;done=true;speaking=false;clearTimeout(to);res()};
+  u.onstart=()=>speaking=true;u.onboundary=()=>pulse=1;u.onend=fin;u.onerror=fin;
+  to=setTimeout(function chk(){if(paused){to=setTimeout(chk,1000);return}fin()},text.length*700/o.rate+4000);
+  speaking=true;synth.speak(u);
+ });
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const FILL=['嗯，','那麼，','欸，','好，','來，'];
+
+/* ---------- 播放控制 ---------- */
+let items=[],idx=0,token=0,playing=false;
+function setItems(){items=parse($('txt').value);idx=0;
+ $('list').innerHTML=items.map((it,i)=>`<div data-i="${i}">${i+1}. ${it.text}</div>`).join('');}
+$('list').onclick=e=>{const d=e.target.closest('[data-i]');if(d)run(+d.dataset.i)};
+async function run(start){
+ if(!items.length)setItems();
+ const my=++token;if(synth)synth.cancel();paused=false;playing=true;speaking=false;
+ for(idx=start;idx<items.length;idx++){
+  if(my!==token)return;
+  const it=items[idx];
+  document.querySelectorAll('#list .on').forEach(n=>n.classList.remove('on'));
+  const n=$('list').children[idx];if(n){n.classList.add('on');n.scrollIntoView({block:'nearest'})}
+  $('sub').textContent=it.text;showSlide(it);
+  tgt=EM[it.emo]||EM.normal;
+  if(it.wave||(idx===0&&it.emo==='happy'))wave=2.4;
+  if(it.emph)nodAmp=1;
+  if(it.pre){await sleep(it.pre*1000);if(my!==token)return}
+  while(paused&&my===token)await sleep(100);
+  if(my!==token)return;
+  const vol=+$('vol').value,br=+$('rate').value,bp=+$('pitch').value;
+  if($('fill').checked&&idx>0&&it.emo!=='serious'&&it.emo!=='sad'&&Math.random()<.2){
+   await say(FILL[Math.floor(Math.random()*FILL.length)],{rate:br*1.05,pitch:bp,vol});
+   if(my!==token)return;await sleep(rnd(120,260));
+  }
+  const e=tgt;
+  await say(it.text,{rate:Math.max(.5,Math.min(2,br*e.rate*it.rate*rnd(.96,1.05))),
+    pitch:Math.max(.1,Math.min(2,bp*e.pitch*rnd(.97,1.04)*(it.end==='？'||it.end==='?'?1.05:1))),vol});
+  if(my!==token)return;
+  const base={'。':rnd(300,550),'！':rnd(300,450),'!':rnd(300,450),'？':rnd(500,800),'?':rnd(500,800),'…':rnd(700,1000)}[it.end]||rnd(250,450);
+  await sleep(base+(it.para?rnd(350,600):0));
+ }
+ if(my===token){playing=false;tgt=EM.normal;slideT=0;$('slide').classList.remove('on');$('wrap').classList.remove('sl');$('sub').textContent='（講稿結束）';}
+}
+$('play').onclick=()=>{if(paused){paused=false;if(synth)synth.resume();return}if(!playing)run(idx<items.length?idx:0);};
+$('pause').onclick=()=>togglePause();
+function togglePause(){if(!playing)return;paused=!paused;if(synth){paused?synth.pause():synth.resume()}if(paused)speaking=false;}
+$('prev').onclick=()=>run(Math.max(0,idx-1));
+$('next').onclick=()=>run(Math.min(items.length-1,idx+1));
+$('restart').onclick=()=>run(0);
+$('load').onclick=()=>{token++;if(synth)synth.cancel();playing=false;slideT=0;$('slide').classList.remove('on');$('wrap').classList.remove('sl');$('sT').dataset.i='';setItems();$('sub').textContent='講稿已套用，按「播放」開始';};
+function typeset(n=0){const M=window.MathJax;if(M&&M.typesetPromise)M.typesetPromise([$('slide')]).catch(()=>{});else if(n<10)setTimeout(()=>typeset(n+1),600)}
+function showSlide(it){
+ const on=it.slide>=0;slideT=on?1:0;$('slide').classList.toggle('on',on);$('wrap').classList.toggle('sl',on);
+ if(!on)return;const s=slides[it.slide];
+ if($('sT').dataset.i!==String(it.slide)){
+  $('sT').dataset.i=it.slide;$('sT').textContent=s.title;$('sL').textContent='';
+  s.bul.forEach(b=>{const li=document.createElement('li');li.textContent=b;if(/^\$\$/.test(b))li.className='m';$('sL').appendChild(li)});
+  $('sN').textContent=(it.slide+1)+' / '+slides.length;typeset();
+  const sl=$('slide');sl.classList.remove('pop');void sl.offsetWidth;sl.classList.add('pop');
+ }
+ const all=!$('prog').checked||it.sIdx>=s.n-1;
+ const show=all?s.bul.length:Math.min(s.bul.length,it.sIdx+1);
+ [...$('sL').children].forEach((li,i)=>li.classList.toggle('v',i<show));
+}
+const SLIDE_SAMPLE=String.raw`## 歡迎來到本週簡報
+- 主題：讓講稿說得更生動
+- 主講：你的虛擬主播
+[揮手]大家好，歡迎來到這一次的簡報！
+今天我會用三張投影片，帶大家看重點。
+## 第一，節奏很重要
+- 速度要有快有慢
+- 停頓讓重點浮現
+- 句尾別每次都一樣
+說話最怕的就是一路平鋪直敘。[停頓0.5]
+所以我們會在重點前放慢，[慢]讓聽的人跟上。
+最後記得，句尾的停頓也要有長有短！
+## 第二，表情與動作
+- 驚嘆號代表興奮
+- 問號代表疑惑
+- 重點時點頭
+你有沒有發現，我的表情一直在變化呢？
+[驚訝]原來只要加上這些小細節，就生動很多！
+## 第三，加上數學式
+- 勾股定理：$a^2+b^2=c^2$
+$$\int_0^1 x^2\,dx=\frac13$$
+- 二次公式
+$$x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}$$
+你看，數學式也可以直接放在投影片上。
+勾股定理說的是，兩股的平方和，等於斜邊的平方。
+## 謝謝大家
+- 歡迎提出問題
+- 下次再見
+[開心]以上就是今天的內容，謝謝大家收看，我們下次再見！`;
+$('demo').onclick=()=>{$('txt').value=SLIDE_SAMPLE;$('load').click();};
+$('file').onchange=async e=>{
+ const f=e.target.files[0];if(!f)return;const buf=await f.arrayBuffer();let s;
+ try{s=new TextDecoder('utf-8',{fatal:true}).decode(buf)}catch(_){s=new TextDecoder('big5').decode(buf)}
+ $('txt').value=s;$('load').click();
+};
+
+/* ---------- 介面 ---------- */
+$('title').oninput=e=>$('ttl').textContent=e.target.value;
+$('rate').oninput=e=>$('rv').textContent=(+e.target.value).toFixed(2);
+$('pitch').oninput=e=>$('pv').textContent=(+e.target.value).toFixed(2);
+$('subon').onchange=e=>$('sub').classList.toggle('off',!e.target.checked);
+$('clr').onchange=e=>document.body.classList.toggle('clear',e.target.checked);
+$('chair').oninput=e=>document.documentElement.style.setProperty('--hair',e.target.value);
+$('cout').oninput=e=>document.documentElement.style.setProperty('--outfit',e.target.value);
+$('ceye').oninput=e=>document.documentElement.style.setProperty('--eye',e.target.value);
+const hidePanel=()=>$('app').classList.toggle('nopanel');
+$('hide').onclick=hidePanel;
+addEventListener('keydown',e=>{
+ if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+ if(e.key==='h'||e.key==='H')hidePanel();
+ if(e.key===' '){e.preventDefault();playing?togglePause():$('play').click()}
+});
+document.querySelectorAll('[fill="#ffe0cc"]').forEach(e=>e.classList.add('sk'));
+document.querySelectorAll('[fill="#f7cdb4"]').forEach(e=>e.classList.add('sk2'));
+const CH=[
+ {n:'小夜（紫髮長髮）',hair:'#3b2a6b',out:'#e0527a',eye:'#4aa3ff',skin:'#ffe0cc',s2:'#f7cdb4',style:'L',pitch:1.1,rate:1},
+ {n:'阿翔（黑髮・眼鏡・西裝）',hair:'#23232f',out:'#2f4a8a',eye:'#6b4a2a',skin:'#f6d3b8',s2:'#e8bf9f',style:'S',gl:1,tie:1,pitch:.8,rate:1},
+ {n:'小橘（橘髮雙馬尾・貓耳）',hair:'#e8802a',out:'#f2c230',eye:'#2fb58a',skin:'#ffe3d3',s2:'#f9d0bd',style:'T',cat:1,pitch:1.25,rate:1.05},
+ {n:'雪音（銀髮・紅瞳）',hair:'#cfd6ea',out:'#5aa7d6',eye:'#d9364f',skin:'#fff0ea',s2:'#f8ddd2',style:'L',pitch:1,rate:1},
+ {n:'林博士（灰髮・眼鏡・白袍）',hair:'#6d7080',out:'#eceff6',collar:'#9aa6c4',tieC:'#2f8f5a',eye:'#3a6fa8',skin:'#f3d0b5',s2:'#e4bb9b',style:'S',gl:1,tie:1,pitch:.9,rate:.95},
+ {n:'阿森（綠髮・耳機）',hair:'#2f9a68',out:'#2b2f55',eye:'#f2a22a',skin:'#e9c09f',s2:'#d9a985',style:'S',ph:1,pitch:.88,rate:1.05}
+];
+$('who').innerHTML=CH.map((c,i)=>`<option value="${i}">${c.n}</option>`).join('');
+function applyChar(i){
+ const c=CH[i],st=document.documentElement.style,sh=(id,on)=>$(id).style.display=on?'':'none';
+ st.setProperty('--hair',c.hair);st.setProperty('--outfit',c.out);st.setProperty('--eye',c.eye);
+ st.setProperty('--skin',c.skin);st.setProperty('--skin2',c.s2);
+ st.setProperty('--collar',c.collar||'#fff');st.setProperty('--tie',c.tieC||'#e0334f');
+ sh('hbL',c.style==='L');sh('hbS',c.style!=='L');sh('twin',c.style==='T');
+ sh('cat',c.cat);sh('gl',c.gl);sh('ph',c.ph);sh('tie',c.tie);
+ $('chair').value=c.hair;$('cout').value=c.out;$('ceye').value=c.eye;
+ $('pitch').value=c.pitch;$('rate').value=c.rate;
+ $('pv').textContent=c.pitch.toFixed(2);$('rv').textContent=c.rate.toFixed(2);
+ $('who').value=i;
+}
+$('who').onchange=e=>applyChar(+e.target.value);
+const q=new URLSearchParams(location.search);
+{const w=+q.get('who');applyChar(w>0&&w<CH.length?w:0)}
+$('smode').onchange=e=>setSmode(e.target.value);
+setSmode(q.get('smode')||2);
+if(q.get('clean')==='1'){$('app').classList.add('nopanel');document.body.classList.add('clear')}
+setItems();
+(function(){let s='';for(let i=0;i<10;i++)s+=`<rect class="bar" x="${915+i*24}" y="230" width="14" height="30" rx="3"/>`;$('bars').innerHTML=s})();
+
+/* ---------- 動畫 ---------- */
+let t=0,last=performance.now(),nextBlink=2,blink=0,gaze={x:0,y:0,tx:0,ty:0},nextGaze=1;
+let wave=0,nodAmp=0,mouthO=0,sway=rnd(0,9);
+const A=(id,k,v)=>$(id).setAttribute(k,v);
+const bars=document.querySelectorAll('.bar');
+function frame(now){
+ const dt=Math.min(.05,(now-last)/1000);last=now;t+=dt;
+ const k=Math.min(1,dt*5);
+ for(const key in tgt)if(typeof tgt[key]==='number')cur[key]+=(tgt[key]-cur[key])*k;
+ cur.open+=((tgt.open||0)-cur.open)*k;
+ /* 眨眼 */
+ nextBlink-=dt;if(nextBlink<=0){blink=.16;nextBlink=rnd(2,5.5)}
+ const bl=blink>0?Math.sin(Math.PI*(1-blink/.16)):0;if(blink>0)blink-=dt;
+ /* 視線 */
+ nextGaze-=dt;if(nextGaze<=0){nextGaze=rnd(1.2,3.5);const c=Math.random()<(speaking?.7:.4);gaze.tx=c?(slideT&&Math.random()<.5?-.9:0):rnd(-1,1);gaze.ty=c?0:rnd(-.6,.6)}
+ gaze.x+=(gaze.tx-gaze.x)*dt*8;gaze.y+=(gaze.ty-gaze.y)*dt*8;
+ /* 嘴巴 */
+ pulse=Math.max(0,pulse-dt*3);
+ let target=0;
+ if(speaking){target=.2+.55*Math.abs(Math.sin(t*10+Math.sin(t*2.7)*2.5))*(.75+.25*pulse+.2*Math.sin(t*3.3));}
+ mouthO+=(target-mouthO)*Math.min(1,dt*18);
+ const o=Math.min(1,mouthO+cur.open*(speaking?.4:1));
+ const s=cur.smile;const w=28+Math.max(s,0)*8-o*5;
+ const cy=-s*9;const botMid=3+o*28+Math.max(s,0)*3;
+ const ct=2*0-cy,cb=2*botMid-cy;
+ A('mouth','d',`M${-w} ${cy} Q0 ${ct} ${w} ${cy} Q0 ${cb} ${-w} ${cy}Z`);
+ /* 肢體 */
+ nodAmp=Math.max(0,nodAmp-dt*1.8);if(speaking&&Math.random()<dt*.35)nodAmp=Math.max(nodAmp,.5);
+ const nod=Math.sin(t*14)*7*nodAmp;
+ const breath=Math.sin(t*1.8)*4;
+ const swayA=Math.sin(t*.7+sway)*2.2+Math.sin(t*1.3)*1;
+ const hx=Math.sin(t*.9)*5+gaze.x*4,hy=nod+breath*.6+cur.lean*8;
+ A('head','transform',`translate(${hx} ${hy}) rotate(${cur.tilt+swayA+(speaking?Math.sin(t*3)*1.6:0)} 640 460)`);
+ slideSm+=(slideT-slideSm)*Math.min(1,dt*3);
+ const M=SM[smode]||SM[2],sc=1+(M.sc-1)*slideSm;
+ A('char','transform',`translate(${(M.cx-M.sc*640)*slideSm} ${610*(1-sc)+breath}) scale(${sc})`);
+ $('char').style.opacity=1-(M.hide?slideSm:0);
+ /* 眼睛 */
+ const eo=Math.max(.05,cur.eye*(1-bl*.95));
+ const ey=318,gx=gaze.x*5,gy=gaze.y*4;
+ A('eL','transform',`translate(595 ${ey}) scale(1 ${eo})`);A('eR','transform',`translate(685 ${ey}) scale(1 ${eo})`);
+ for(const c of['L','R']){A('i'+c,'cx',gx);A('i'+c,'cy',gy);A('p'+c,'cx',gx);A('p'+c,'cy',gy);A('h'+c,'cx',gx-5);A('h'+c,'cy',gy-6)}
+ A('kL','transform',`translate(595 ${278+cur.yL}) rotate(${cur.bL})`);
+ A('kR','transform',`translate(685 ${278+cur.yR}) rotate(${-cur.bR})`);
+ A('bl','opacity',cur.blush);A('br','opacity',cur.blush);
+ /* 手臂 */
+ wave=Math.max(0,wave-dt);
+ const lift=speaking?Math.max(0,Math.sin(t*1.1))*18:0;
+ const aR=wave>0?-148+Math.sin(t*9)*16:15+Math.sin(t*1.2)*2;
+ A('armL','transform',`translate(500 565) rotate(${-15-lift*(nodAmp>0?1.8:1)+Math.sin(t*1.2+1)*2})`);
+ A('armR','transform',`translate(780 565) rotate(${aR})`);
+ /* 背景小動畫 */
+ bars.forEach((b,i)=>{const h=14+Math.abs(Math.sin(t*2+i*.9))*(speaking?70:30);b.setAttribute('height',h);b.setAttribute('y',260-h)});
+ requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
