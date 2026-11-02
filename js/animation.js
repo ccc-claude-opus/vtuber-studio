@@ -30,25 +30,25 @@ function frame(now){
  const breath=Math.sin(t*1.8)*4;
  const swayA=Math.sin(t*.7+sway)*2.2+Math.sin(t*1.3)*1;
  const hx=Math.sin(t*.9)*5+gaze.x*4,hy=nod+breath*.6+cur.lean*8;
- A('head','transform',`translate(${hx} ${hy}) rotate(${cur.tilt+swayA+(speaking?Math.sin(t*3)*1.6:0)} 640 460)`);
+ const ht=`translate(${hx} ${hy}) rotate(${cur.tilt+swayA+(speaking?Math.sin(t*3)*1.6:0)} ${G.cx} ${G.pv})`;A('head','transform',ht);A('headB','transform',ht);
  slideSm+=(slideT-slideSm)*Math.min(1,dt*3);
  const M=SM[smode]||SM[2],sc=1+(M.sc-1)*slideSm;
  A('char','transform',`translate(${(M.cx-M.sc*640)*slideSm} ${610*(1-sc)+breath}) scale(${sc})`);
  $('char').style.opacity=1-(M.hide?slideSm:0);
  /* 眼睛 */
  const eo=Math.max(.05,cur.eye*(1-bl*.95));
- const ey=318,gx=gaze.x*5,gy=gaze.y*4;
- A('eL','transform',`translate(595 ${ey}) scale(1 ${eo})`);A('eR','transform',`translate(685 ${ey}) scale(1 ${eo})`);
- for(const c of['L','R']){A('i'+c,'cx',gx);A('i'+c,'cy',gy);A('p'+c,'cx',gx);A('p'+c,'cy',gy);A('h'+c,'cx',gx-5);A('h'+c,'cy',gy-6)}
- A('kL','transform',`translate(595 ${278+cur.yL}) rotate(${cur.bL})`);
- A('kR','transform',`translate(685 ${278+cur.yR}) rotate(${-cur.bR})`);
+ const xL=G.cx-G.ex,xR=G.cx+G.ex,gx=gaze.x*5,gy=gaze.y*4;
+ A('eL','transform',`translate(${xL} ${G.ey}) scale(1 ${eo})`);A('eR','transform',`translate(${xR} ${G.ey}) scale(1 ${eo})`);
+ A('gL','transform',`translate(${gx} ${gy})`);A('gR','transform',`translate(${gx} ${gy})`);
+ A('kL','transform',`translate(${xL} ${G.ky+cur.yL}) rotate(${cur.bL})`);
+ A('kR','transform',`translate(${xR} ${G.ky+cur.yR}) rotate(${-cur.bR})`);
  A('bl','opacity',cur.blush);A('br','opacity',cur.blush);
  /* 手臂 */
  wave=Math.max(0,wave-dt);
  const lift=speaking?Math.max(0,Math.sin(t*1.1))*18:0;
  const aR=wave>0?-148+Math.sin(t*9)*16:15+Math.sin(t*1.2)*2;
- A('armL','transform',`translate(500 565) rotate(${-15-lift*(nodAmp>0?1.8:1)+Math.sin(t*1.2+1)*2})`);
- A('armR','transform',`translate(780 565) rotate(${aR})`);
+ A('armL','transform',`translate(${G.aL[0]} ${G.aL[1]}) rotate(${-15-lift*(nodAmp>0?1.8:1)+Math.sin(t*1.2+1)*2})`);
+ A('armR','transform',`translate(${G.aR[0]} ${G.aR[1]}) rotate(${aR})`);
  /* 背景小動畫 */
  bars.forEach((b,i)=>{const h=14+Math.abs(Math.sin(t*2+i*.9))*(speaking?70:30);b.setAttribute('height',h);b.setAttribute('y',260-h)});
  requestAnimationFrame(frame);
